@@ -8,11 +8,13 @@ WORKDIR /app
 COPY . /app
 
 # Install any needed packages specified in requirements.txt
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install -r requirements.txt
 
 # Make port 5000 available to the world outside this container
 EXPOSE 5000
 
+# Define environment variable
+ENV FLASK_APP=app
 
 # Run gunicorn server
-CMD ["gunicorn", "--bind", "0.0.0.0:5000", "app:app"]
+CMD ["gunicorn", "--bind", "0.0.0.0:$PORT", "app:app"]
