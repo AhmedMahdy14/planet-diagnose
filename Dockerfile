@@ -1,19 +1,18 @@
-# start by pulling the python image
-FROM python:3.10-alpine
+# Use the official Python image from the Docker Hub
+FROM python:3.10-slim
 
-# copy the requirements file into the image
-COPY ./requirements.txt /app/requirements.txt
-
-# switch working directory
+# Set the working directory in the container
 WORKDIR /app
 
-# install the dependencies and packages in the requirements file
-RUN pip install -r requirements.txt
-
-# copy every content from the local file to the image
+# Copy the current directory contents into the container at /app
 COPY . /app
 
-# configure the container to run in an executed manner
-ENTRYPOINT [ "python" ]
+# Install any needed packages specified in requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
 
-CMD ["app.py" ]
+# Make port 5000 available to the world outside this container
+EXPOSE 5000
+
+
+# Run gunicorn server
+CMD ["gunicorn", "--bind", "0.0.0.0:5000", "app:app"]
