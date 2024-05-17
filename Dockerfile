@@ -17,4 +17,4 @@ EXPOSE 5000
 ENV FLASK_APP=app
 
 # Run gunicorn server
-CMD exec gunicorn --bind 0.0.0.0:$PORT app.routes:app
+CMD exec gunicorn --bind 0.0.0.0:$PORT app:app
