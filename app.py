@@ -1,20 +1,35 @@
 import os
-
-from flask import Flask, render_template
+from flask import Flask, render_template, jsonify, request
+import cloudinary
+import cloudinary.uploader
+from cloudinary.utils import cloudinary_url
 
 app = Flask(__name__)
 
 
+@app.route("/upload", methods=['POST'])
+def upload_file():
+    cloudinary.config(cloud_name="ddgeg9myx", api_key="911351556278827", api_secret="i9GCIpqx7AkzfLtUcUsFVYg652o")
+
+    if request.method == 'POST':
+        file_to_upload = request.files['file']
+        app.logger.info('%s file_to_upload', file_to_upload)
+        if file_to_upload:
+            upload_result = cloudinary.uploader.upload(file_to_upload)
+            app.logger.info(upload_result)
+            return jsonify(upload_result)
+
+
 @app.route('/')
-def hello_world():  # put application's code here
+def hello_world():
     # from inference_sdk import InferenceHTTPClient
     # CLIENT = InferenceHTTPClient(
     #     api_url="https://detect.roboflow.com",
     #     api_key="G612WzEzRuy4vjhLaSTF"
     # )
-    #
-    # # 3. Powdery mildew https://universe.roboflow.com/search?q=powdery%C2%A0mildew
-    # result = CLIENT.infer("download.png", model_id="tomato-disease-b518h/3")
+
+    # https://universe.roboflow.com/shiv-xbj9m/plant-disease-kkt3g/model/1
+    # result = CLIENT.infer("./dd.jpeg", model_id="plant-disease-kkt3g/1")
 
     return render_template('index.html')
 
