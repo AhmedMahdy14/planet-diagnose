@@ -5,6 +5,24 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Powdery Mildew Predictor</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script>
+        async function checkCloudinary() {
+            const response = await fetch('/check-cloudinary');
+            const data = await response.json();
+            const resultDiv = document.getElementById('cloudinary-result');
+            resultDiv.innerHTML = ''; // Clear previous results
+            data.results.forEach(result => {
+                const img = document.createElement('img');
+                img.src = result.image_url;
+                img.alt = "Processed Image";
+                const p = document.createElement('p');
+                p.innerText = result.message;
+                resultDiv.appendChild(img);
+                resultDiv.appendChild(p);
+            });
+            resultDiv.style.display = 'block';
+        }
+    </script>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -74,13 +92,15 @@
     <h1>Upload an Image</h1>
     <form id="upload-form" action="/upload" method="post" enctype="multipart/form-data">
         <input type="file" id="image-input" name="file" accept="image/*">
-        <button type="submit">Upload</button>
+        <button type="submit" style="margin-bottom: 20px">Upload</button>
     </form>
     <div id="result" style="display: none;">
         <h2>Processed Image:</h2>
         <img id="processed-image" src="" alt="Processed Image">
         <p id="response"></p>
     </div>
+    <button onclick="checkCloudinary()">Check Cloudinary</button>
+    <div id="cloudinary-result" style="display: none;"></div>
 </div>
 <script>
     document.getElementById('upload-form').addEventListener('submit', async function (event) {

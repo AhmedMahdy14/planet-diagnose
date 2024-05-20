@@ -1,7 +1,10 @@
 import os
+
+import requests
 from flask import Flask, render_template, jsonify, request
 import cloudinary
 import cloudinary.uploader
+import cloudinary.api
 from inference_sdk import InferenceHTTPClient
 
 cloudinary.config(cloud_name="ddgeg9myx", api_key="911351556278827", api_secret="i9GCIpqx7AkzfLtUcUsFVYg652o")
@@ -14,18 +17,6 @@ CLIENT = InferenceHTTPClient(
 MODEL_ID = "plant-disease-kkt3g/1"
 
 app = Flask(__name__)
-
-
-def perform_inference(file):
-    """Helper function to perform inference using the Roboflow API."""
-    try:
-        # Perform inference
-        # https://universe.roboflow.com/shiv-xbj9m/plant-disease-kkt3g/model/1
-        result = CLIENT.infer(file, model_id="plant-disease-kkt3g/1")
-        print(result)
-        return result, None
-    except Exception as e:
-        return None, str(e)
 
 
 @app.route('/')
@@ -45,21 +36,60 @@ def upload_file():
     upload_result = cloudinary.uploader.upload(file)
     image_url = upload_result.get('secure_url')
 
-    # Perform inference using the URL of the uploaded image
-    result, error = perform_inference(image_url)
-    if error:
-        return jsonify({'message': 'Inference failed', 'error': error}), 500
-
-    if result['predictions']:
-        response_message = "Powdery Mildew is captured with confidence " + str(
-            int(result['predictions'][0]['confidence'] * 100)) + " %"
-    else:
-        response_message = "No Powdery Mildew is captured"
-
     return jsonify({
-        "message": response_message,
+        "message": "Uploaded Successfully",
         "image_url": image_url
     }), 200
+
+
+@app.route('/check-cloudinary', methods=['GET'])
+def check_cloudinary():
+    resources = cloudinary.api.resources(type='upload', max_results=10)
+    results = []
+    for resource in resources['resources']:
+        public_id = resource['public_id']
+        url = resource['url']
+
+        # Download the image
+        response = requests.get(url)
+        if response.status_code == 200:
+            secure_url = resource['secure_url']
+
+            # Perform inference
+            result, _ = perform_inference(secure_url)
+            if result['predictions']:
+                r = "Powdery Mildew is captured with confidence " + str(
+                    int(result['predictions'][0]['confidence'] * 100)) + " %"
+            else:
+                r = "No Powdery Mildew is captured"
+
+            results.append({
+                "message": r,
+                "image_url": url
+            })
+
+            # Delete the image from Cloudinary
+            cloudinary.uploader.destroy(public_id)
+        else:
+            results.append({
+                "message": "Failed to download image",
+                "image_url": url
+            })
+
+    return jsonify({"results": results})
+
+
+def perform_inference(file):
+    """Helper function to perform inference using the Roboflow API."""
+    try:
+        # Perform inference
+        # https://universe.roboflow.com/shiv-xbj9m/plant-disease-kkt3g/model/1
+        result = CLIENT.infer(file, model_id="plant-disease-kkt3g/1")
+        print(result)
+        return result, None
+    except Exception as e:
+        print(e)
+        return None, str(e)
 
 
 if __name__ == "__main__":
