@@ -1,5 +1,5 @@
 import os
-from flask import Flask, render_template, jsonify, request, send_from_directory
+from flask import Flask, render_template, jsonify, request
 import cloudinary
 import cloudinary.uploader
 from inference_sdk import InferenceHTTPClient
