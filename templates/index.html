@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Powdery Mildew Predictor</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <script>
         async function checkCloudinary() {
             const response = await fetch('/check-cloudinary');
@@ -15,6 +14,10 @@
                 const img = document.createElement('img');
                 img.src = result.image_url;
                 img.alt = "Processed Image";
+                img.style.maxWidth = '100%';
+                img.style.height = 'auto';
+                img.style.display = 'block';
+                img.style.margin = '10px 0';
                 const p = document.createElement('p');
                 p.innerText = result.message;
                 resultDiv.appendChild(img);
