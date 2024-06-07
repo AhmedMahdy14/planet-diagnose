@@ -33,6 +33,7 @@ def upload_file():
         return jsonify({"error": "No selected file"}), 400
 
     # Upload the file to Cloudinary
+    print(f"file {file}")
     upload_result = cloudinary.uploader.upload(file)
     image_url = upload_result.get('secure_url')
 
