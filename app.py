@@ -55,7 +55,7 @@ def check_cloudinary():
         response = requests.get(url)
         if response.status_code == 200:
             secure_url = resource['secure_url']
-
+            print(f"secure_url {secure_url}")
             # Perform inference
             result, _ = perform_inference(secure_url)
             if result['predictions']:
@@ -66,7 +66,7 @@ def check_cloudinary():
 
             results.append({
                 "message": r,
-                "image_url": url
+                "image_url": secure_url
             })
 
             # Delete the image from Cloudinary
@@ -74,7 +74,7 @@ def check_cloudinary():
         else:
             results.append({
                 "message": "Failed to download image",
-                "image_url": url
+                "image_url": secure_url
             })
 
     return jsonify({"results": results})
