@@ -83,32 +83,29 @@
     </div>
     <button onclick="checkCloudinary()">Check Images from Cloud</button>
     <div id="cloudinary-result" style="display: none;"></div>
-    <script>
-        async function checkCloudinary() {
-            const response = await fetch('/check-cloudinary');
-            const data = await response.json();
-            const resultDiv = document.getElementById('cloudinary-result');
-            resultDiv.innerHTML = ''; // Clear previous results
-            data.results.forEach(result => {
-                const img = document.createElement('img');
-                console.log(result)
-                console.log(result.image_url)
-                img.src = result.image_url;
-                img.alt = "Processed Image";
-                img.style.maxWidth = '100%';
-                img.style.height = 'auto';
-                img.style.display = 'block';
-                img.style.margin = '10px 0';
-                const p = document.createElement('p');
-                p.innerText = result.message;
-                resultDiv.appendChild(img);
-                resultDiv.appendChild(p);
-            });
-            resultDiv.style.display = 'block';
-        }
-    </script>
 </div>
 <script>
+    async function checkCloudinary() {
+        const response = await fetch('/check-cloudinary');
+        const data = await response.json();
+        const resultDiv = document.getElementById('cloudinary-result');
+        data.results.forEach(result => {
+            const img = document.createElement('img');
+            console.log(result['image_url'])
+            img.src = result.image_url;
+            img.alt = "Processed Image";
+            img.style.maxWidth = '100%';
+            img.style.height = 'auto';
+            img.style.display = 'block';
+            img.style.margin = '10px 0';
+            const p = document.createElement('p');
+            p.innerText = result.message;
+            resultDiv.appendChild(img);
+            resultDiv.appendChild(p);
+        });
+        resultDiv.style.display = 'block';
+    }
+
     document.getElementById('upload-form').addEventListener('submit', async function (event) {
         event.preventDefault();
 

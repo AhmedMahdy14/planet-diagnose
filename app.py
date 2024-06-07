@@ -45,7 +45,7 @@ def upload_file():
 
 @app.route('/check-cloudinary', methods=['GET'])
 def check_cloudinary():
-    resources = cloudinary.api.resources(type='upload', max_results=10)
+    resources = cloudinary.api.resources(type="upload", max_results=10)
     results = []
     for resource in resources['resources']:
         public_id = resource['public_id']
@@ -54,8 +54,10 @@ def check_cloudinary():
         # Download the image
         response = requests.get(url)
         if response.status_code == 200:
-            secure_url = resource['secure_url']
-            print(f"secure_url {secure_url}")
+            # secure_url = resource['secure_url']
+            secure_url = resource['url']
+            print(f"url {resource['url']}")
+            print(f"secure_url {resource['secure_url']}")
             # Perform inference
             result, _ = perform_inference(secure_url)
             if result['predictions']:
@@ -70,11 +72,11 @@ def check_cloudinary():
             })
 
             # Delete the image from Cloudinary
-            cloudinary.uploader.destroy(public_id)
+            # cloudinary.uploader.destroy(public_id)
         else:
             results.append({
                 "message": "Failed to download image",
-                "image_url": secure_url
+                "image_url": url
             })
 
     return jsonify({"results": results})
