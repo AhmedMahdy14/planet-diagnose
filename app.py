@@ -6,7 +6,10 @@ import cloudinary
 import cloudinary.uploader
 import cloudinary.api
 from inference_sdk import InferenceHTTPClient
+from celery import Celery
 
+# Initialize Celery
+celery_app = Celery('tasks', broker='redis://localhost:6379/0')
 cloudinary.config(cloud_name="ddgeg9myx", api_key="911351556278827", api_secret="i9GCIpqx7AkzfLtUcUsFVYg652o")
 
 CLIENT = InferenceHTTPClient(
@@ -18,6 +21,10 @@ MODEL_ID = "plant-disease-kkt3g/1"
 
 app = Flask(__name__)
 
+@celery_app.task
+def delete_image_after_delay(public_id):
+    # Execute Cloudinary function to delete image after 1 hour
+    cloudinary.uploader.destroy(public_id)
 
 @app.route('/')
 def index():
@@ -73,6 +80,8 @@ def check_cloudinary():
 
             # Delete the image from Cloudinary
             # cloudinary.uploader.destroy(public_id)
+            delete_image_after_delay.apply_async(args=[public_id], countdown=3600)  # 3600 seconds = 1 hour
+
         else:
             results.append({
                 "message": "Failed to download image",
