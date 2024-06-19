@@ -15,9 +15,22 @@ CLIENT = InferenceHTTPClient(
 )
 
 MODEL_ID = "plant-disease-kkt3g/1"
+service_account_info = {
+    "type": "service_account",
+    "project_id": "drone-7dba9",
+    "private_key_id": "f44c905d6e0ecf299a33b15fc847b242c10787c7",
+    "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQDLJPdNaFrAhJRZ\nHtAKUbsTJGny2DaFX7+pJvQYjZIUO0N+UGOkuZ5uYYS5TpxJr+0jMWN/YSQXZeOt\nS2KpXQGyCPaw0DJRulyDHozjNEjnHs6+jCtnmeBWoxfeRYf5mPBp6mbuZ9BqOBi4\n+j0YqIbnKGVYXYp0kfdCbtkbWp1y2f/ki0LSdLZqXTI4okDmAP7EcSZxxxPoFqmM\nSGekOTO5n8rKKBsu6AEeOtiRjUgaQkIn/vgp8Glfsj2v3xmzOgVBBcmsEsMFWX4G\nOm0C8qa/xzKhFGWmbDwxIG3G3DYW9bL1YRgUdAnDNa6/QBouIe0D/u8WvwKGCuZ4\nnBd4fKDZAgMBAAECggEAMyHq3aEWtr6oWIZY9z/7RqYzxNyHXKrtIzaa2lNIIa+J\nHZI+gof2SPJi5gHTdPjDR8h2sulQnFMZK9V90AOJGbcH4RmGkOvHvXlDHS1b7FDk\n2TGO+1TQEv6aU2hNAZZtbTuDDR80ZogYMPdLyZkh261fVQ62ewECq8Ya/7efSfkB\n0gktJVRFI/6SR3I2H2IA7NvcXQN+nKMKv5BhwCW2p9tdTAchuv4gRvf+FnUIzh0X\nip9eg7EeCTmwV3TRFnNZaeC1ePvPBj6kA4Huf7bv32emLuqvEG3O1xn1jAHY4ts1\nyZwY78cghcWylUYTWp4n1RGnY2ivgRAS1R8YlSu+wQKBgQD/sU0MUwl/qTlp59Wr\nmK8gEM1S58OtBBGmVEnB5SOnfg2yeF7temGz72U8GpLHm0ZceFhsR3b+SBomd1j7\nxkz+BDXKv3vAcWSk+eJDrUVd9Ktcr0ADllL3oBCRFJbWoWOV+nHZqlDXkpwyRDTN\nUZEi+5TObMf44mGTBL9/8h+xJwKBgQDLY33KgmBf2Cyfv7iCKHHlbG1OEBlSB/9v\ncC/KfKvp4WfNtsa69NZUDm0+4PSN2wNCLuwte282Cw8go3ZXW1oJBMmMzYg8Zo2k\nn37dk6sOWAcjz01Wd/APmhzTaqUkSk1ykd+PrG7sdwVeRAjufu6cC/3sMYl9sZKr\nhPbylfBd/wKBgQDS8EAx9KcXbFHzLtE1WSbQe0wIIy9oory0zUBz90csvG8sVuVp\nYNcNjGel5/5DMbQgQSAhY+uk53K7XSZJv1RxEqQV+VZscp+nAodJcb6SPnDIa8OR\nsggMRT6lkajGtCnl5tDZ0woSbd7yERbGc44aoBYpHdDzYD9C/F3HfcXrbQKBgQCt\nbaHWq4OYVpH+ihG/0tMD6Yfu96VPoIg8MvJdfB9vaAgGjuM4igu0UzTuWA3QZD+M\nEMzNH6K994Int5rydG/6nr1qNdwEfQIsrOAV+pPywDceXuc4Yz8tXqFT2W0F2+Hc\nXuy96zAOrJLERclD7LJ0F3mnDLqLln5ViSS1yArVawKBgHpCHzJ/zEgdYl/y4ky6\nc0Dv7DM6jN2EzfE7N+qoaSm8hvuM3Eog8SWEt/Ymihwt5YjjSUhgjgJLh7Z1Kcf+\nsjUOJ+HiUmQkhg+4r1vUsPc8ZgS9+Ayr/TB0pfanSdbUrt2n4jLPWBQUkM+mkLp5\nm8puK43EJW3go1ZAXynmzO7t\n-----END PRIVATE KEY-----\n",
+    "client_email": "firebase-adminsdk-9kezu@drone-7dba9.iam.gserviceaccount.com",
+    "client_id": "108569095929246151990",
+    "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+    "token_uri": "https://oauth2.googleapis.com/token",
+    "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+    "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/firebase-adminsdk-9kezu%40drone-7dba9.iam.gserviceaccount.com",
+    "universe_domain": "googleapis.com"
+}
 
 # Initialize Firebase
-cred = credentials.Certificate("drone-7dba9-firebase-adminsdk-9kezu-f44c905d6e.json")
+cred = credentials.Certificate(service_account_info)
 firebase_admin.initialize_app(cred, {'databaseURL': 'https://drone-7dba9-default-rtdb.firebaseio.com'})
 ref = db.reference('/')
 
