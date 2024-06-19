@@ -26,7 +26,7 @@ load_dotenv()
 service_account_info = json.loads(os.getenv('GOOGLE_SERVICE_ACCOUNT_INFO'))
 
 # Initialize Firebase
-cred = credentials.Certificate("drone-7dba9-firebase-adminsdk-9kezu-f44c905d6e.json")
+cred = credentials.Certificate(service_account_info)
 firebase_admin.initialize_app(cred, {'databaseURL': 'https://drone-7dba9-default-rtdb.firebaseio.com'})
 ref = db.reference('/')
 
