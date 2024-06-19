@@ -6,6 +6,9 @@ import cloudinary.api
 from inference_sdk import InferenceHTTPClient
 import firebase_admin
 from firebase_admin import credentials, db
+import os
+import json
+from dotenv import load_dotenv
 
 cloudinary.config(cloud_name="ddgeg9myx", api_key="911351556278827", api_secret="i9GCIpqx7AkzfLtUcUsFVYg652o")
 
@@ -15,6 +18,12 @@ CLIENT = InferenceHTTPClient(
 )
 
 MODEL_ID = "plant-disease-kkt3g/1"
+
+# Load environment variables from .env file
+load_dotenv()
+
+# Get the service account info from environment variable
+service_account_info = json.loads(os.getenv('GOOGLE_SERVICE_ACCOUNT_INFO'))
 
 # Initialize Firebase
 cred = credentials.Certificate("drone-7dba9-firebase-adminsdk-9kezu-f44c905d6e.json")
