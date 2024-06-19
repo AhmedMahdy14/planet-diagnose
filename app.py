@@ -1,15 +1,12 @@
-import os
-
 import requests
 from flask import Flask, render_template, jsonify, request
 import cloudinary
 import cloudinary.uploader
 import cloudinary.api
 from inference_sdk import InferenceHTTPClient
-from celery import Celery
+import firebase_admin
+from firebase_admin import credentials, db
 
-# Initialize Celery
-celery_app = Celery('tasks', broker='redis://localhost:6379/0')
 cloudinary.config(cloud_name="ddgeg9myx", api_key="911351556278827", api_secret="i9GCIpqx7AkzfLtUcUsFVYg652o")
 
 CLIENT = InferenceHTTPClient(
@@ -19,12 +16,21 @@ CLIENT = InferenceHTTPClient(
 
 MODEL_ID = "plant-disease-kkt3g/1"
 
+# Initialize Firebase
+cred = credentials.Certificate("drone-7dba9-firebase-adminsdk-9kezu-f44c905d6e.json")
+firebase_admin.initialize_app(cred, {'databaseURL': 'https://drone-7dba9-default-rtdb.firebaseio.com'})
+ref = db.reference('/')
+
 app = Flask(__name__)
 
-@celery_app.task
-def delete_image_after_delay(public_id):
-    # Execute Cloudinary function to delete image after 1 hour
-    cloudinary.uploader.destroy(public_id)
+
+@app.route('/fetch-firebase-data')
+def fetch_firebase_data():
+    result = list(ref.order_by_key().limit_to_last(1).get().values())[0]
+    s = "Temp:{:.1f} C    Humidity: {}%".format(result['temperature'], result['humidity'])
+    print(s)
+    return s
+
 
 @app.route('/')
 def index():
@@ -77,11 +83,6 @@ def check_cloudinary():
                 "message": r,
                 "image_url": secure_url
             })
-
-            # Delete the image from Cloudinary
-            # cloudinary.uploader.destroy(public_id)
-            delete_image_after_delay.apply_async(args=[public_id], countdown=3600)  # 3600 seconds = 1 hour
-
         else:
             results.append({
                 "message": "Failed to download image",
@@ -105,5 +106,4 @@ def perform_inference(file):
 
 
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 5000))
-    app.run(host="0.0.0.0", port=port)
+    app.run(host="0.0.0.0", port=5000)

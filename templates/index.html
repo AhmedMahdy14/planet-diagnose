@@ -30,6 +30,11 @@
             margin-bottom: 20px;
         }
 
+        p {
+            font-size: 18px;
+            color: #333;
+        }
+
         input[type="file"] {
             margin-bottom: 10px;
             display: block;
@@ -71,6 +76,9 @@
 </head>
 <body>
 <div class="container">
+    <h1>Real-time Data Display</h1>
+    <p id="firebase-data">Loading...</p>
+
     <h1>Upload an Image</h1>
     <form id="upload-form" action="/upload" method="post" enctype="multipart/form-data">
         <input type="file" id="image-input" name="file" accept="image/*">
@@ -85,6 +93,22 @@
     <div id="cloudinary-result" style="display: none;"></div>
 </div>
 <script>
+    async function fetchFirebaseData() {
+        try {
+            const response = await fetch('/fetch-firebase-data');
+            const data = await response.text();
+            document.getElementById('firebase-data').innerText = data;
+        } catch (error) {
+            console.error('Error fetching data:', error);
+            document.getElementById('firebase-data').innerText = 'Error fetching data.';
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        fetchFirebaseData();
+        setInterval(fetchFirebaseData, 1000);  // Fetch Firebase data every 5 seconds
+    });
+
     async function checkCloudinary() {
         const response = await fetch('/check-cloudinary');
         const data = await response.json();
