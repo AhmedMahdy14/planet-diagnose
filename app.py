@@ -1,11 +1,6 @@
-import os
-import requests
+import os, redis, requests, cloudinary, cloudinary.uploader, cloudinary.api
 from flask import Flask, render_template, jsonify, request
-import cloudinary
-import cloudinary.uploader
-import cloudinary.api
 from inference_sdk import InferenceHTTPClient
-from flask_sqlalchemy import SQLAlchemy
 
 cloudinary.config(cloud_name="ddgeg9myx", api_key="911351556278827", api_secret="i9GCIpqx7AkzfLtUcUsFVYg652o")
 
@@ -18,62 +13,37 @@ MODEL_ID = "plant-disease-kkt3g/1"
 
 app = Flask(__name__)
 
-app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL',
-                                                  'postgres://uatngc8vpchqgn:ped841106285a3fde3b5b56635ebd8d23ef777ed2efa4583995eedb32feaf8acb@c5p86clmevrg5s.cluster-czrs8kj4isg7.us-east-1.rds.amazonaws.com:5432/dds4v25hrjtbs5')
-
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-
-db = SQLAlchemy(app)
+redis_client = redis.StrictRedis(host='localhost', port=6379, db=0)
 
 
-class SensorData(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    temperature = db.Column(db.Float, nullable=False)
-    humidity = db.Column(db.Float, nullable=False)
-
-
-@app.route('/add', methods=['POST'])
-def add_data():
+@app.route('/api/data', methods=['POST'])
+def set_data():
     data = request.json
-    new_entry = SensorData(temperature=data['temperature'], humidity=data['humidity'])
-    db.session.add(new_entry)
-    db.session.commit()
-    return jsonify({"message": "Data added"}), 201
+    temperature = data.get('temperature')
+    humidity = data.get('humidity')
+
+    if temperature is None or humidity is None:
+        return jsonify({'error': 'Temperature or humidity not provided'}), 400
+
+    redis_client.set('temperature', temperature)
+    redis_client.set('humidity', humidity)
+
+    return jsonify({'message': 'Temperature and humidity set'}), 200
 
 
-@app.route('/data', methods=['GET'])
+@app.route('/api/data', methods=['GET'])
 def get_data():
-    results = SensorData.query.all()
-    data = [{"temperature": entry.temperature, "humidity": entry.humidity} for entry in results]
-    return jsonify(data)
+    temperature = redis_client.get('temperature')
+    humidity = redis_client.get('humidity')
 
+    if temperature is None or humidity is None:
+        return jsonify({'error': 'Temperature or humidity not found'}), 404
 
-# socketio = SocketIO(app)
+    return jsonify({
+        'temperature': float(temperature),
+        'humidity': float(humidity)
+    }), 200
 
-# MongoDB connection
-# client = MongoClient(
-#     'mongodb+srv://ahmedmahdy1420:p1FiayTc5IxFt5De@cluster0.18q1cq3.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0')
-# db = client.sensor_data
-# collection = db.readings
-
-
-# Fetch data from MongoDB
-# def fetch_data():
-#     cursor = collection.find().sort('timestamp', -1).limit(10)
-#     return list(cursor)
-
-
-# Monitor MongoDB for changes
-# def monitor_changes():
-#     with collection.watch() as stream:
-#         for change in stream:
-#             socketio.emit('new_data', fetch_data())
-
-
-# Run the monitor_changes function in a separate thread
-# thread = threading.Thread(target=monitor_changes)
-# thread.start()
-#
 
 @app.route('/')
 def index():
@@ -81,11 +51,6 @@ def index():
     # print(data)
     return render_template('index.html')
 
-
-# @socketio.on('connect')
-# def handle_connect():
-#     socketio.emit('new_data', fetch_data())
-#
 
 @app.route('/upload', methods=['POST'])
 def upload_file():
@@ -173,21 +138,6 @@ def perform_inference(file):
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port)
-
-# Host
-# c5p86clmevrg5s.cluster-czrs8kj4isg7.us-east-1.rds.amazonaws.com
-# Database
-# dds4v25hrjtbs5
-# User
-# uatngc8vpchqgn
-# Port
-# 5432
-# Password
-# ped841106285a3fde3b5b56635ebd8d23ef777ed2efa4583995eedb32feaf8acb
-# URI
-# postgres://uatngc8vpchqgn:ped841106285a3fde3b5b56635ebd8d23ef777ed2efa4583995eedb32feaf8acb@c5p86clmevrg5s.cluster-czrs8kj4isg7.us-east-1.rds.amazonaws.com:5432/dds4v25hrjtbs5
-# Heroku CLI
-# heroku pg:psql postgresql-colorful-94934 --app flask-app-ams
 
 # import requests
 #
