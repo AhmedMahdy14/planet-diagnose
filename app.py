@@ -32,7 +32,7 @@ app = Flask(__name__)
 socketio = SocketIO(app)
 
 # MongoDB connection
-client = MongoClient('mongodb+srv://ahmedmahdy1420:<password>@cluster0.18q1cq3.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0')
+client = MongoClient('mongodb+srv://ahmedmahdy1420:p1FiayTc5IxFt5De@cluster0.18q1cq3.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0')
 db = client.sensor_data
 collection = db.readings
 
@@ -121,6 +121,19 @@ def check_cloudinary():
 
     return jsonify({"results": results})
 
+@app.route('/delete_all_images', methods=['DELETE'])
+def delete_all_images():
+    try:
+        # Fetch all resources
+        resources = cloudinary.api.resources(type='upload')
+
+        # Loop through each resource and delete it
+        for resource in resources['resources']:
+            cloudinary.uploader.destroy(resource['public_id'])
+
+        return jsonify({"message": "All images deleted successfully"}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 def perform_inference(file):
     """Helper function to perform inference using the Roboflow API."""

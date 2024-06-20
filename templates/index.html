@@ -91,18 +91,25 @@
     </div>
     <button onclick="checkCloudinary()">Check Images from Cloud</button>
     <div id="cloudinary-result" style="display: none;"></div>
+    <button onclick="deleteAllImages()">Delete All Images</button>
+
 </div>
 <script>
-    async function fetchFirebaseData() {
+    async function deleteAllImages() {
         try {
-            const response = await fetch('/fetch-firebase-data');
-            const data = await response.text();
-            document.getElementById('firebase-data').innerText = data;
+            const response = await fetch('/delete_all_images', {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+            const result = await response.json();
+            alert(result.message || result.error);
         } catch (error) {
-            console.error('Error fetching data:', error);
-            document.getElementById('firebase-data').innerText = 'Error fetching data.';
+            alert('Error: ' + error.message);
         }
     }
+
 
     async function checkCloudinary() {
         const response = await fetch('/check-cloudinary');
