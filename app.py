@@ -24,7 +24,7 @@ socketio = SocketIO(app)
 
 # MongoDB connection
 client = MongoClient(
-    'mongodb+srv://ahmedmahdy1420:p1FiayTc5IxFt5De@cluster0.18q1cq3.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0')
+    'mongodb+srv://ahmedmahdy1420:p1FiayTc5IxFt5De@cluster0.18q1cq3.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0&ssl=true')
 db = client.sensor_data
 collection = db.readings
 
