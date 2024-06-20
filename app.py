@@ -18,7 +18,11 @@ MODEL_ID = "plant-disease-kkt3g/1"
 
 app = Flask(__name__)
 
-app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL', 'postgres://uatngc8vpchqgn:ped841106285a3fde3b5b56635ebd8d23ef777ed2efa4583995eedb32feaf8acb@c5p86clmevrg5s.cluster-czrs8kj4isg7.us-east-1.rds.amazonaws.com:5432/dds4v25hrjtbs5')
+app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL',
+                                                  'postgres://uatngc8vpchqgn:ped841106285a3fde3b5b56635ebd8d23ef777ed2efa4583995eedb32feaf8acb@c5p86clmevrg5s.cluster-czrs8kj4isg7.us-east-1.rds.amazonaws.com:5432/dds4v25hrjtbs5')
+
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
 db = SQLAlchemy(app)
 
 
