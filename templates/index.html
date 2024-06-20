@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Powdery Mildew Predictor</title>
+    <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
 
     <style>
         body {
@@ -76,8 +77,19 @@
 </head>
 <body>
 <div class="container">
-    <h1>Real-time Data Display</h1>
-    <p id="firebase-data">Loading...</p>
+    <h1>Latest Sensor Data</h1>
+    <table border="1" id="data-table">
+        <tr>
+            <th>Humidity</th>
+            <th>Temperature</th>
+        </tr>
+        {% for row in data %}
+            <tr>
+                <td>{{ row['humidity'] }}</td>
+                <td>{{ row['temperature'] }}</td>
+            </tr>
+        {% endfor %}
+    </table>
 
     <h1>Upload an Image</h1>
     <form id="upload-form" action="/upload" method="post" enctype="multipart/form-data">
@@ -95,6 +107,22 @@
 
 </div>
 <script>
+    document.addEventListener('DOMContentLoaded', (event) => {
+        var socket = io.connect('http://' + document.domain + ':' + location.port);
+
+        socket.on('new_data', function (data) {
+            var table = document.getElementById("data-table");
+            table.innerHTML = "";
+            data.forEach(function (row) {
+                var tr = document.createElement('tr');
+                tr.innerHTML = "<td>" + new Date(row.timestamp * 1000).toLocaleString() + "</td>" +
+                    "<td>" + row.humidity + "</td>" +
+                    "<td>" + row.temperature + "</td>";
+                table.appendChild(tr);
+            });
+        });
+    });
+
     async function deleteAllImages() {
         try {
             const response = await fetch('/delete_all_images', {

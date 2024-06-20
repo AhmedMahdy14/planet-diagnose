@@ -5,8 +5,6 @@ import cloudinary
 import cloudinary.uploader
 import cloudinary.api
 from inference_sdk import InferenceHTTPClient
-# import firebase_admin
-# from firebase_admin import credentials, db
 from flask_socketio import SocketIO
 from pymongo import MongoClient
 import threading
@@ -20,18 +18,13 @@ CLIENT = InferenceHTTPClient(
 
 MODEL_ID = "plant-disease-kkt3g/1"
 
-# cred = credentials.Certificate("drone-keys.json")
-#
-# firebase_admin.initialize_app(cred, {'databaseURL': 'https://drone-7dba9-default-rtdb.firebaseio.com'})
-#
-# ref = db.reference('/')
-
 app = Flask(__name__)
 
 socketio = SocketIO(app)
 
 # MongoDB connection
-client = MongoClient('mongodb+srv://ahmedmahdy1420:p1FiayTc5IxFt5De@cluster0.18q1cq3.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0')
+client = MongoClient(
+    'mongodb+srv://ahmedmahdy1420:p1FiayTc5IxFt5De@cluster0.18q1cq3.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0')
 db = client.sensor_data
 collection = db.readings
 
@@ -120,6 +113,7 @@ def check_cloudinary():
 
     return jsonify({"results": results})
 
+
 @app.route('/delete_all_images', methods=['DELETE'])
 def delete_all_images():
     try:
@@ -133,6 +127,7 @@ def delete_all_images():
         return jsonify({"message": "All images deleted successfully"}), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
 
 def perform_inference(file):
     """Helper function to perform inference using the Roboflow API."""
