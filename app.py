@@ -32,7 +32,7 @@ app = Flask(__name__)
 socketio = SocketIO(app)
 
 # MongoDB connection
-client = MongoClient('your_mongodb_connection_string')
+client = MongoClient('mongodb+srv://ahmedmahdy1420:<password>@cluster0.18q1cq3.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0')
 db = client.sensor_data
 collection = db.readings
 
