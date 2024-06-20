@@ -104,11 +104,6 @@
         }
     }
 
-    document.addEventListener('DOMContentLoaded', function () {
-        fetchFirebaseData();
-        setInterval(fetchFirebaseData, 1000);  // Fetch Firebase data every 5 seconds
-    });
-
     async function checkCloudinary() {
         const response = await fetch('/check-cloudinary');
         const data = await response.json();

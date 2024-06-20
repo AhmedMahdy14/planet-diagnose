@@ -6,8 +6,11 @@ import cloudinary
 import cloudinary.uploader
 import cloudinary.api
 from inference_sdk import InferenceHTTPClient
-import firebase_admin
-from firebase_admin import credentials, db
+# import firebase_admin
+# from firebase_admin import credentials, db
+from flask_socketio import SocketIO
+from pymongo import MongoClient
+import threading
 
 cloudinary.config(cloud_name="ddgeg9myx", api_key="911351556278827", api_secret="i9GCIpqx7AkzfLtUcUsFVYg652o")
 
@@ -18,26 +21,50 @@ CLIENT = InferenceHTTPClient(
 
 MODEL_ID = "plant-disease-kkt3g/1"
 
-cred = credentials.Certificate("drone-keys.json")
-
-firebase_admin.initialize_app(cred, {'databaseURL': 'https://drone-7dba9-default-rtdb.firebaseio.com'})
-
-ref = db.reference('/')
+# cred = credentials.Certificate("drone-keys.json")
+#
+# firebase_admin.initialize_app(cred, {'databaseURL': 'https://drone-7dba9-default-rtdb.firebaseio.com'})
+#
+# ref = db.reference('/')
 
 app = Flask(__name__)
+
+socketio = SocketIO(app)
+
+# MongoDB connection
+client = MongoClient('your_mongodb_connection_string')
+db = client.sensor_data
+collection = db.readings
+
+
+# Fetch data from MongoDB
+def fetch_data():
+    cursor = collection.find().sort('timestamp', -1).limit(10)
+    return list(cursor)
+
+
+# Monitor MongoDB for changes
+def monitor_changes():
+    with collection.watch() as stream:
+        for change in stream:
+            socketio.emit('new_data', fetch_data())
+
+
+# Run the monitor_changes function in a separate thread
+thread = threading.Thread(target=monitor_changes)
+thread.start()
 
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+    data = fetch_data()
+    print(data)
+    return render_template('index.html', data=data)
 
 
-@app.route('/fetch-firebase-data')
-def fetch_firebase_data():
-    result = list(ref.order_by_key().limit_to_last(1).get().values())[0]
-    s = "Temp:{:.1f} C    Humidity: {}%".format(result['temperature'], result['humidity'])
-    print(s)
-    return s
+@socketio.on('connect')
+def handle_connect():
+    socketio.emit('new_data', fetch_data())
 
 
 @app.route('/upload', methods=['POST'])
