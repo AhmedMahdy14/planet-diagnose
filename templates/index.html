@@ -72,23 +72,41 @@
             color: green;
         }
 
+        /* CSS for styling (optional) */
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 20px;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+        }
+
+        .data-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 20px;
+            font-size: 24px;
+        }
+
+        .temperature {
+            margin-right: 10px;
+        }
     </style>
 </head>
 <body>
 <div class="container">
-    <h1>Latest Sensor Data</h1>
-    <table border="1" id="data-table">
-        <tr>
-            <th>Humidity</th>
-            <th>Temperature</th>
-        </tr>
-        {% for row in data %}
-            <tr>
-                <td>{{ row['humidity'] }}</td>
-                <td>{{ row['temperature'] }}</td>
-            </tr>
-        {% endfor %}
-    </table>
+    <h1>Current Temperature and Humidity</h1>
+    <div class="data-container">
+        <div class="temperature">
+            <strong>Temperature:</strong> <span id="temperature">Loading...</span>
+        </div>
+        <div class="humidity">
+            <strong>Humidity:</strong> <span id="humidity">Loading...</span>
+        </div>
+    </div>
 
     <h1>Upload an Image</h1>
     <form id="upload-form" action="/upload" method="post" enctype="multipart/form-data">
@@ -106,6 +124,24 @@
 
 </div>
 <script>
+    // Function to fetch data from Flask API every 5 seconds
+    async function fetchData() {
+        try {
+            const response = await fetch('/api/data'); // Fetch data from your Flask API endpoint
+            const data = await response.json(); // Parse JSON response
+            // Update UI with temperature and humidity data
+            document.getElementById('temperature').textContent = data.temperature.toFixed(2) + ' °C';
+            document.getElementById('humidity').textContent = data.humidity.toFixed(2) + ' %';
+        } catch (error) {
+            console.error('Error fetching data:', error);
+        }
+    }
+
+    // Initial call to fetchData function
+    fetchData();
+
+    // Set interval to call fetchData function every 5 seconds
+    setInterval(fetchData, 5000);
 
     async function deleteAllImages() {
         try {

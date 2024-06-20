@@ -48,9 +48,9 @@ def get_data():
 
 @app.route('/')
 def index():
-    # data = fetch_data()
-    # print(data)
-    return render_template('index.html')
+    data = get_data()
+    print(data)
+    return render_template('index.html', data=data)
 
 
 @app.route('/upload', methods=['POST'])
@@ -143,7 +143,7 @@ if __name__ == "__main__":
 # import requests
 #
 # def send_data_to_heroku(temperature, humidity):
-#     url = "https://your-app-name.herokuapp.com/add"
+#     url = "https://flask-app-ams-7ba645ff96ca.herokuapp.com/api/data"
 #     data = {
 #         "temperature": temperature,
 #         "humidity": humidity
@@ -155,9 +155,3 @@ if __name__ == "__main__":
 # temperature = 22.5
 # humidity = 60
 # send_data_to_heroku(temperature, humidity)
-
-
-# heroku run python
-# >>> from app import db
-# >>> db.create_all()
-# >>> exit()
