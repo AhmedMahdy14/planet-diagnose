@@ -1,3 +1,5 @@
+import os
+
 import requests
 from flask import Flask, render_template, jsonify, request
 import cloudinary
@@ -6,7 +8,6 @@ import cloudinary.api
 from inference_sdk import InferenceHTTPClient
 import firebase_admin
 from firebase_admin import credentials, db
-import os
 
 cloudinary.config(cloud_name="ddgeg9myx", api_key="911351556278827", api_secret="i9GCIpqx7AkzfLtUcUsFVYg652o")
 
@@ -108,4 +109,5 @@ def perform_inference(file):
 
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000)
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port)
