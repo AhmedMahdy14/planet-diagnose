@@ -139,19 +139,3 @@ def perform_inference(file):
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port)
-
-# import requests
-#
-# def send_data_to_heroku(temperature, humidity):
-#     url = "https://flask-app-ams-7ba645ff96ca.herokuapp.com/api/data"
-#     data = {
-#         "temperature": temperature,
-#         "humidity": humidity
-#     }
-#     response = requests.post(url, json=data)
-#     print(response.json())
-#
-# # Example usage:
-# temperature = 22.5
-# humidity = 60
-# send_data_to_heroku(temperature, humidity)

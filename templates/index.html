@@ -8,12 +8,9 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
             margin: 0;
             background-color: #f0f0f0;
+            overflow-y: scroll; /* Enable scrolling for the entire page */
         }
 
         .container {
@@ -24,6 +21,7 @@
             text-align: center;
             max-width: 400px;
             width: 100%;
+            margin: 20px auto; /* Center the container */
         }
 
         h1 {
@@ -72,17 +70,6 @@
             color: green;
         }
 
-        /* CSS for styling (optional) */
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            padding: 20px;
-        }
-
-        h1 {
-            margin-bottom: 20px;
-        }
-
         .data-container {
             display: flex;
             justify-content: center;
@@ -124,7 +111,6 @@
 
 </div>
 <script>
-    // Function to fetch data from Flask API every 5 seconds
     async function fetchData() {
         try {
             const response = await fetch('/api/data'); // Fetch data from your Flask API endpoint
@@ -137,10 +123,6 @@
         }
     }
 
-    // Initial call to fetchData function
-    fetchData();
-
-    // Set interval to call fetchData function every 5 seconds
     setInterval(fetchData, 1000);
 
     async function deleteAllImages() {
