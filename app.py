@@ -14,7 +14,7 @@ MODEL_ID = "plant-disease-kkt3g/1"
 app = Flask(__name__)
 
 redis_url = os.getenv('REDIS_URL', "redis://localhost:6379")
-redis_client = redis.from_url(redis_url)
+redis_client = redis.from_url(redis_url, ssl_cert_reqs=None)
 
 
 @app.route('/api/data', methods=['POST'])
